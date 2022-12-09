@@ -1,0 +1,56 @@
+<launch>
+
+    <!-- Arguments -->
+    <arg name="rviz" default="true"/>
+    <arg name="bagfile" default="true"/>
+    <arg name="frequency" default="1.0"/>
+    <arg name="pause" default="false"/>
+    <arg name="simulator" default="false"/>
+
+    <!--  Select one of the datasets below   -->
+    <arg name="dataset1" default="false"/>
+    <arg name="dataset2" default="false"/>
+    <arg name="dataset3" default="false"/>
+    <arg name="dataset6_proj" default="false"/>
+    <arg name="dataset7_proj" default="false"/>
+    <arg name="dataset8_proj" default="false"/>
+    <arg name="dataset9_proj" default="true"/>
+
+    <!-- Source data -->
+    <include file="$(find engr4200_basics_src)/launch/basics.launch">
+        <!-- Rosbag arguments -->
+        <arg name="frequency" default="$(arg frequency)"/>
+        <arg name="pause"     default="$(arg pause)"/>
+      
+        <!-- Source (only one true or none for real robot) -->
+        <arg name="bagfile"   default="$(arg bagfile)"/>
+        <arg name="simulator" default="$(arg simulator)"/>
+        
+        <!-- Bagfile (only used if bagfile true) -->
+        <arg name="dataset1" default="$(arg dataset1)"/>
+        <arg name="dataset2" default="$(arg dataset2)"/>
+        <arg name="dataset3" default="$(arg dataset3)"/>
+        <arg name="dataset6_proj" default="$(arg dataset6_proj)"/>
+        <arg name="dataset7_proj" default="$(arg dataset7_proj)"/>
+        <arg name="dataset8_proj" default="$(arg dataset8_proj)"/>
+        <arg name="dataset9_proj" default="$(arg dataset9_proj)"/>
+     </include>
+    
+    <!-- Split & Merge node -->
+    <include file="$(find lab2_line_extraction_src)/launch/splitandmerge.launch"/>
+
+    <!-- RViz -->
+    <node if="$(arg rviz)" pkg="rviz" type="rviz" name="rviz" args="-d $(find project_slam)/config/custom.rviz" output="screen"/>
+    
+    <!-- EKF node-->
+    <node pkg="project_slam" type="node.py" name="ekf_slam" output="screen">
+        <param if="$(arg dataset1)" name="dataset" value="1" type="int"/>
+        <param if="$(arg dataset2)" name="dataset" value="2" type="int"/>
+        <param if="$(arg dataset3)" name="dataset" value="3" type="int"/>
+        <param if="$(arg dataset6_proj)" name="dataset" value="4" type="int"/>
+        <param if="$(arg dataset7_proj)" name="dataset" value="5" type="int"/>
+        <param if="$(arg dataset8_proj)" name="dataset" value="6" type="int"/>
+        <param if="$(arg dataset9_proj)" name="dataset" value="7" type="int"/>
+    </node>
+    
+</launch>
